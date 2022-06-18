@@ -1,26 +1,13 @@
 <?
+$errors = 0;
+ini_set('display_errors', $errors);
+ini_set('display_startup_errors', $errors);
+//error_reporting(E_NONE);
 
 $user = $_GET["user"];
 $file = file_get_contents("./userdata/".$user.".mudae");
-$list = preg_split("/((\r?\n)|(\r\n?))/", $file);
-
-/* -- TODO: image cache -- */ 
-
-// $cache_file = 'content.cache';
-// if(file_exists($cache_file)) {
-//   if(time() - filemtime($cache_file) > 86400) {
-//      // too old , re-fetch
-//      $cache = file_get_contents('YOUR FILE SOURCE');
-//      file_put_contents($cache_file, $cache);
-//   } else {
-//      // cache is still fresh
-//   }
-// } else {
-//   // no cache, create one
-//   $cache = file_get_contents('YOUR FILE SOURCE');
-//   file_put_contents($cache_file, $cache);
-// }
-
+$harem = preg_split("/((\r?\n)|(\r\n?))/", $file);
+array_pop($harem);
 
 ?>
 
@@ -29,7 +16,8 @@ $list = preg_split("/((\r?\n)|(\r\n?))/", $file);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <title><?=$user?>'s harem</title>
+
 
     <style type="text/css">
         
@@ -41,48 +29,14 @@ $list = preg_split("/((\r?\n)|(\r\n?))/", $file);
             font-weight: 500;
             margin-bottom: 70px;
         }
-        .gallery-title:after {
-            content: "";
-            position: absolute;
-            width: 7.5%;
-            left: 46.5%;
-            height: 45px;
-            border-bottom: 1px solid #5e5e5e;
-        }
-        .filter-button
-        {
-            font-size: 18px;
-            border: 1px solid #42B32F;
-            border-radius: 5px;
-            text-align: center;
-            color: #42B32F;
-            margin-bottom: 30px;
-
-        }
-        .filter-button:hover
-        {
-            font-size: 18px;
-            border: 1px solid #42B32F;
-            border-radius: 5px;
-            text-align: center;
-            color: #ffffff;
-            background-color: #42B32F;
-
-        }
-        .btn-default:active .filter-button:active
-        {
-            background-color: #42B32F;
-            color: white;
-        }
-
-        .port-image
-        {
-            width: 100%;
-        }
 
         .gallery_product
         {
             margin-bottom: 30px;
+        }
+
+        label{
+            font-size: 11px;
         }
 
     </style>
@@ -91,6 +45,7 @@ $list = preg_split("/((\r?\n)|(\r\n?))/", $file);
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<link rel="shortcut icon" href="favicon.png" />
 <!------ Include the above in your HEAD tag ---------->
 
 <body>
@@ -102,20 +57,41 @@ $list = preg_split("/((\r?\n)|(\r\n?))/", $file);
             </div>
 
 
-                <? foreach ($list as $item) {
-                    $item_d = preg_split("/%/", $item);
-                    #echo "rank: ".$item_d[0]." name: ".$item_d[1]." link: ".$item_d[2];
+                <?  
 
-                    //$link = "https://mudae.net/uploads/8582936/n_Y1e2ffcFE_njXInb7J~1YFkavo.png";
-                    $image = file_get_contents($item_d[2]); ?>
-
-                    <div class="gallery_product col-lg-2 col-md-4 col-sm-4 col-xs-6 filter hdpe">
-                        <? echo '<img src="data:image/jpeg;base64,'.base64_encode($image).'"/>'; ?>
-                        <label><?="#".$item_d[0]." - ".$item_d[1]?></label>
-                    </div>
-
+                    foreach ($harem as $char) {
                     
-                <? } ?>
+                        $char_a = preg_split("/%/", $char);
+
+                        $image_url = pathinfo($char_a[3]); //get url pathinfo
+                        $image_file_name = "./cache/".$image_url["filename"].".".$image_url["extension"]; //get file name with extension
+
+                        if(file_exists($image_file_name) && filesize($image_file_name) > 0){ //si tengo cache del archivo lo cargo ?> 
+
+                            <div class="gallery_product col-lg-2 col-md-4 col-sm-4 col-xs-6">
+                                <img src="<?=$image_file_name?>"/>
+                                <label><?="".$char_a[0]." - ".$char_a[1]?></label> <label style="color: blue;"><?="(".$char_a[2]." ka)"?></label>
+                            </div>
+
+                        <? } else { //si no la descargo
+
+                            // if(file_exists($image_file_name)){
+                            //     unlink(image_file_name);
+                            // }
+
+                            try{
+                                $image = file_get_contents($char_a[3]); //get image from mudae
+                                file_put_contents($image_file_name, $image); ?>
+
+                            <div class="gallery_product col-lg-2 col-md-4 col-sm-4 col-xs-6">
+                                <img src="data:image/jpeg;base64,<?=base64_encode($image)?>"/>
+                                <label ><?="".$char_a[0]." - ".$char_a[1]?></label> <label style="color: blue;"><?="(".$char_a[2]." ka)"?></label>
+                            </div>
+
+                        <? } catch (Exeption $e){echo "error";};
+                        } //end if
+                    } //end foreach?>
+
 
             </div>
         </div>

@@ -3,7 +3,7 @@ import discord
 import re
 import pydash as _
 
-token = ""
+token = "--token--"
 client = commands.Bot("", self_bot=True)
 
 mudae_id = 432610292342587392
@@ -14,7 +14,10 @@ channel_id = 986094173587386370 #mudae_gallery
 re_rank = "\*\*#(\d+)\*\*"
 re_name = "- (.+) -"
 re_link = "https:.+\.png"
-re_full = "\*\*#(\d+)\*\*| - (.+) - |(https:.+\.png)"
+re_kake = " (\d+) ka"
+#re_full = "\*\*#(\d+)\*\*| - (.+) - |(https:.+\.png)"
+re_full = "\*\*(#\d+)\*\* - (.+) \*\*(\d+)\*\* ka - <(https:.+.png)>"
+
 
 @client.event
 async def on_ready():
@@ -28,8 +31,8 @@ async def on_message(message):
         return
 
     if message.channel.id == channel_id: #is specified channel
-        await message.channel.send(f'$mmri-s <@{message.author.id}>')
-        await message.channel.send('Generando tu galeria, por favor espere...')
+        await message.channel.send(f'$mmrki-s <@{message.author.id}>')
+        #await message.channel.send('Generando tu galeria, por favor espere...')
         return
 
     if message.author.id == mudae_id: #is mudae
@@ -63,7 +66,7 @@ async def on_message(message):
                 while True:
                     
                     try:
-                        msg = await client.wait_for('message', check=lambda message: message.author.id == mudae_id, timeout=2)      
+                        msg = await client.wait_for('message', check=lambda message: message.author.id == mudae_id, timeout=3)      
                     except:
                         break
                     
@@ -75,9 +78,10 @@ async def on_message(message):
                 for item in last_list:
 
                     result = re.findall(re_full, item)
-                    #print(result)
+                    # print(item)
+                    # print(result)
                     try:
-                        last_iteration += f'{result[0][0]}%{result[1][1]}%{result[2][2]}\n'
+                        last_iteration += f'{result[0][0]}%{result[0][1]}%{result[0][2]}%{result[0][3]}\n'
                     except:
                         pass
 
@@ -88,8 +92,8 @@ async def on_message(message):
                 f.close()
 
                 mudae_channel = client.get_channel(channel_id)
-                print(f'{user_name}\'s gallery is ready -> http://nimrodsolutions.xyz/mudae/index.php?user={_.camel_case(user_name)}')
-                await mudae_channel.send(f'__{user_name}__ tu galeria esta lista -> http://nimrodsolutions.xyz/mudae/index.php?user={_.camel_case(user_name)}')
+                print(f'{user_name}\'s gallery is ready -> http://eliterust.xyz/mudae/index.php?user={_.camel_case(user_name)}')
+                await mudae_channel.send(f'**{user_name}** tu galeria esta lista -> http://eliterust.xyz/mudae/index.php?user={_.camel_case(user_name)}')
 
         return
 
