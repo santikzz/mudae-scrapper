@@ -5,7 +5,7 @@ import discord
 import re
 import pydash as _
 
-token = "NjY2ODI0MjI0MDYwNDczMzY3.YnCLqA.TufEdnay3YzW20hWvVOKlkBC26Q"
+token = "--token--"
 client = commands.Bot("", self_bot=True)
 
 mudae_id = 432610292342587392
