@@ -87,13 +87,13 @@ async def on_message(message):
 
                 #print(last_iteration)
 
-                f = open(f'/var/www/nimrodsolutions/public_html/mudae/userdata/{_.camel_case(user_name)}.mudae', 'w')
+                f = open(f'/var/www/mudae/userdata/{_.camel_case(user_name)}.mudae', 'w')
                 f.write(last_iteration)
                 f.close()
 
                 mudae_channel = client.get_channel(channel_id)
-                print(f'{user_name}\'s gallery is ready -> http://eliterust.xyz/mudae/index.php?user={_.camel_case(user_name)}')
-                await mudae_channel.send(f'**{user_name}** tu galeria esta lista -> http://eliterust.xyz/mudae/index.php?user={_.camel_case(user_name)}')
+                print(f'{user_name}\'s gallery is ready -> {host}/mudae/index.php?user={_.camel_case(user_name)}')
+                await mudae_channel.send(f'**{user_name}** tu galeria esta lista -> {host}/mudae/index.php?user={_.camel_case(user_name)}')
 
         return
 
